@@ -22,7 +22,7 @@ def direct_crude(U, p):
     return np.array(X)
 
 
-def rejection(U, p):
+def rejection(p):
     X = []
     p = np.array(p)
     qj = np.full(len(p), sum(p)/len(p))
