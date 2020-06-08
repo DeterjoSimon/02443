@@ -15,16 +15,29 @@ def histogram(x, y, n_bins=10):
 def direct_crude(U, p):
     X = []
     for k in range(len(U)):
-        for i in range(len(p)):
-            if U[k] <= np.cumsum(p[]) :
+        for i in range(1, len(p)):
+            if U[k] <= np.sum(p[:i]):
                 X.append(i)
-            break
-    return X
+                break
+    return np.array(X)
+
+
+def rejection(U, p):
+    X = []
+    p = np.array(p)
+    qj = np.full(len(p), sum(p)/len(p))
+    c = max(p/qj)
+    while len(X) < len(U):
+
+        I = np.floor(len(p)*np.random.uniform(size=1)) + 1
+        u2 = np.random.uniform(size=1)
+        if u2 <= p[I]/c:
+            X.append(I)
 
 
 if __name__ == '__main__':
     # generate 10,000 uniform random variables
-    U = np.random.random_sample(10000) # 0 og 1
+    U = np.random.random_sample(10000)  # 0 og 1
 
     # simulate 10 000
     p = 0.3
@@ -33,7 +46,9 @@ if __name__ == '__main__':
     B = stats.geom.rvs(p, size=10000)
     # histogram(A, B)
 
-    p = [7/48, 5/48, 1/8, 1/16, 1/4, 5/16]
+    p = [7 / 48, 5 / 48, 1 / 8, 1 / 16, 1 / 4, 5 / 16]
 
-    a = six_point_crude_method(U)
-    histogram(a,A)
+    a = direct_crude(U, p)
+    print(a)
+    print(sum(a[a == 1]))
+
