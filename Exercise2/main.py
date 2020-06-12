@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import random as rand
 import math
 
+
 def histogram(x, y, label1, label2, n_bins=10):
     plt.hist([x, y], n_bins, alpha=0.5, label=[label1, label2])
     plt.legend()
