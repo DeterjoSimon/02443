@@ -1,5 +1,8 @@
+from typing import Any, Union
+
 from scipy import stats
 import numpy as np
+from Exercise3 import funcPareto
 
 
 class Server:
@@ -44,6 +47,8 @@ def process(Server, n_costumers, arrival_time, service_time):
         Server.enter(t[i] + service_time[i])
     return Server.blocks
 
+    # ----------------------------------------------- #
+
 
 def arrival_Poisson(n_customers, mean_time_btw):
     result = stats.expon.rvs(size=n_customers, scale=mean_time_btw)
@@ -55,13 +60,54 @@ def arrival_Erlang(n_customers, mean_time_btw):
     return result
 
 
+def arrival_HyperExp(n_customers):
+    U = np.random.uniform(size=n_costumers)
+    li = []
+    for k in U:
+        if k > 0.8:
+            li.append(stats.expon.rvs(scale=1 / 0.8333))
+        else:
+            li.append(stats.expon.rvs(scale=1 / 5))
+    return li
+
+    # ---------------------------------------------- #
+
+
 def service_Exponential(n_customers, mean_serv_time):
     result = stats.expon.rvs(size=n_customers, scale=mean_serv_time)
     return result
 
 
-def event_poisson_exponential(S, n_c, n_sim, mean_time_btw, mean_serv_time):
+def service_Constant(n_customers, mean_serv_time):
+    return [mean_serv_time for _ in range(n_customers)]
+
+
+def service_Pareto(n_customers, k, mean_serv_time):
+    U = np.random.uniform(0, 1, n_costumers)
+    X, E, V = funcPareto.pareto(U, k)
+    X = (k / (k - 1)) * mean_serv_time * X
+    return X
+    # ------------------------------------------------- #
+
+
+def event_poisson_exponential(S, n_c, mean_time_btw, mean_serv_time):
     return process(S, n_c, arrival_Poisson(n_c, mean_time_btw), service_Exponential(n_c, mean_serv_time))
+
+
+def event_erlang_exponential(S, n_c, mean_time_btw, mean_serv_time):
+    return process(S, n_c, arrival_Erlang(n_c, mean_time_btw), service_Exponential(n_c, mean_serv_time))
+
+
+def event_hyperexp_exponential(S, n_c, mean_serv_time):
+    return process(S, n_c, arrival_HyperExp(n_c), service_Exponential(n_c, mean_serv_time))
+
+
+def event_poisson_constant(S, n_c, mean_time_btw, mean_serv_time):
+    return process(S, n_c, arrival_Poisson(n_c, mean_time_btw), service_Constant(n_c, mean_serv_time))
+
+
+def event_poisson_pareto(S, n_c, mean_time_btw, mean_serv_time, k):
+    return process(S, n_c, arrival_Poisson(n_c, mean_time_btw), service_Pareto(n_c, k, mean_serv_time))
 
 
 if __name__ == "__main__":
@@ -78,7 +124,34 @@ if __name__ == "__main__":
     result = []
     for i in range(m):
         S = Server(n_simulations)
-        result.append(event_poisson_exponential(S, n_costumers, n_simulations, mean_time_btw, mean_serv_time))
+        result.append(event_poisson_exponential(S, n_costumers, mean_time_btw, mean_serv_time))
     print(result)
-    print(sum(result)/n_costumers)
+    print(sum(result) / n_costumers)
 
+    result = []
+    for i in range(m):
+        S = Server(n_simulations)
+        result.append(event_erlang_exponential(S, n_costumers, mean_time_btw, mean_serv_time))
+    print(result)
+    print(sum(result) / n_costumers)
+
+    result = []
+    for i in range(m):
+        S = Server(n_simulations)
+        result.append(event_hyperexp_exponential(S, n_costumers, mean_time_btw))
+    print(result)
+    print(sum(result) / n_costumers)
+
+    result = []
+    for i in range(m):
+        S = Server(n_simulations)
+        result.append(event_poisson_constant(S, n_costumers, mean_time_btw, mean_serv_time))
+    print(result)
+    print(sum(result) / n_costumers)
+
+    result = []
+    for i in range(m):
+        S = Server(n_simulations)
+        result.append(event_poisson_pareto(S, n_costumers, mean_time_btw, mean_serv_time, k=1.05))
+    print(result)
+    print(sum(result) / n_costumers)
