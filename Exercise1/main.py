@@ -1,7 +1,8 @@
 from Exercise1 import LCG as lcg
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.stats import chisquare
+from scipy.stats import chi2
+import math
 
 
 def histogram():
@@ -15,6 +16,27 @@ def histogram():
     plt.show()
 
 
+def chi_squared(X, n, n_classes=10):
+    expected = np.full(10, n/n_classes)
+    obs, bins = np.histogram(X, n_classes)
+
+    test_stat = sum(((obs-expected)**2)/expected)
+    return test_stat
+
+
+def ks(X, n):
+    F = sorted(X)
+    Fn = np.linspace(0, 1, n)
+    D = np.max(abs(Fn-F))
+    return D
+
+
 if __name__ == '__main__':
-    U = lcg.lcg(13, 911, 11584577, 3)
-    print(chisquare(U))
+    M = 2**38 - 45
+    U = lcg.lcg(13, 911, M, 3)
+    print("--- Chi-squared test---")
+    print(chi_squared(U, 10000), " : Value of the test statistic")
+    print("[" + str(chi2.ppf(0.025, 8)) + " ; " + str(chi2.ppf(0.975, 8)) + "]")
+
+    print("--- Kolmogorov-Smirnov test")
+    print("The Kolmogorov–Smirnov statistic is: ", ks(U, 10000))
