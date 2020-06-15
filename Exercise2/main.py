@@ -48,12 +48,24 @@ if __name__ == '__main__':
     # simulate 10 000
     p = 0.3
     A = geometric.geometric(U, p)
+    fig, axes = plt.subplots(nrows=1, ncols=3)
+    axes[0].hist(geometric.geometric(U, p=0.1), alpha=0.7, density=True, stacked=True)
+    axes[0].set_title("p = 0.1")
+    axes[1].hist(geometric.geometric(U, p=0.5), alpha=0.7, density=True, stacked=True)
+    axes[1].set_title("p = 0.5")
+    axes[2].hist(geometric.geometric(U, p=0.7), alpha=0.7, density=True, stacked=True)
+    axes[2].set_title("p = 0.7")
+    plt.show()
     # we compare this geometric distribution with a built-in one
     B = stats.geom.rvs(p, size=10000)
-    # histogram(A, B, "simulation", "built-in")
+    histogram(A, B, "simulation", "built-in")
 
     p = [7 / 48, 5 / 48, 1 / 8, 1 / 16, 1 / 4, 5 / 16]
 
     a = direct_crude(U, p)
+    plt.hist(a)
+    plt.show()
     b = rejection(p)
+    plt.hist(b)
+    plt.show()
 

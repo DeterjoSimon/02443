@@ -3,7 +3,7 @@ from typing import Any, Union
 from scipy import stats
 import numpy as np
 from Exercise3 import funcPareto
-
+import scipy.stats
 
 class Server:
 
@@ -45,7 +45,7 @@ def process(Server, n_costumers, arrival_time, service_time):
     for i in range(n_costumers):
         Server.check_time(t[i])
         Server.enter(t[i] + service_time[i])
-    return Server.blocks
+    return Server.blocks/n_costumers
 
     # ----------------------------------------------- #
 
@@ -110,6 +110,14 @@ def event_poisson_pareto(S, n_c, mean_time_btw, mean_serv_time, k):
     return process(S, n_c, arrival_Poisson(n_c, mean_time_btw), service_Pareto(n_c, k, mean_serv_time))
 
 
+def mean_confidence_interval(data, confidence=0.95):
+    a = 1.0 * np.array(data)
+    n = len(a)
+    m, se = np.mean(a), scipy.stats.sem(a)
+    h = se * scipy.stats.t.ppf((1 + confidence) / 2., n - 1)
+    return m, m - h, m + h
+
+
 if __name__ == "__main__":
     mean_serv_time = 8
     mean_time_btw = 1
@@ -126,32 +134,47 @@ if __name__ == "__main__":
         S = Server(n_simulations)
         result.append(event_poisson_exponential(S, n_costumers, mean_time_btw, mean_serv_time))
     print(result)
-    print(sum(result) / n_costumers)
+    mu, low, up = mean_confidence_interval(result)
+    print("--- CI ---")
+    print("Mean value: ", mu)
+    print("[", low, " ; ", up, "]\n")
 
     result = []
     for i in range(m):
         S = Server(n_simulations)
         result.append(event_erlang_exponential(S, n_costumers, mean_time_btw, mean_serv_time))
     print(result)
-    print(sum(result) / n_costumers)
+    mu, low, up = mean_confidence_interval(result)
+    print("--- CI ---")
+    print("Mean value: ", mu)
+    print("[", low, " ; ", up, "]\n")
 
     result = []
     for i in range(m):
         S = Server(n_simulations)
         result.append(event_hyperexp_exponential(S, n_costumers, mean_time_btw))
     print(result)
-    print(sum(result) / n_costumers)
+    mu, low, up = mean_confidence_interval(result)
+    print("--- CI ---")
+    print("Mean value: ", mu)
+    print("[", low, " ; ", up, "]\n")
 
     result = []
     for i in range(m):
         S = Server(n_simulations)
         result.append(event_poisson_constant(S, n_costumers, mean_time_btw, mean_serv_time))
     print(result)
-    print(sum(result) / n_costumers)
+    mu, low, up = mean_confidence_interval(result)
+    print("--- CI ---")
+    print("Mean value: ", mu)
+    print("[", low, " ; ", up, "]\n")
 
     result = []
     for i in range(m):
         S = Server(n_simulations)
         result.append(event_poisson_pareto(S, n_costumers, mean_time_btw, mean_serv_time, k=1.05))
     print(result)
-    print(sum(result) / n_costumers)
+    mu, low, up = mean_confidence_interval(result)
+    print("--- CI ---")
+    print("Mean value: ", mu)
+    print("[", low, " ; ", up, "]\n")

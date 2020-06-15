@@ -8,4 +8,3 @@ def lcg(a, c, M, x_0, length=10000):
         x[i] = (a * x[i - 1] + c) % M
 
     return x/M
-
