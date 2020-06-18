@@ -79,14 +79,24 @@ if __name__ == "__main__":
     k = [2.05, 2.5, 3, 4]
     mean_list = []
     var_list = []
+    E_list = []
+    V_list = []
     dic = {"k:2.05": [], "k:2.5": [], "k:3": [], "k:4": []}
     for i in k:
         U = np.random.uniform(0.0, 0.1, 10000)
-        par1, E, Var = funcPareto.pareto(U, i)
+        par1, E, Var = funcPareto.pareto(i, 10000)
         ppf = np.linspace(pareto.ppf(0.01, i), pareto.ppf(0.99, i), 100)
         pdf = pareto.pdf(ppf, i)
         # comparison(par1, ppf-1, pdf, "Pareto comparison for k = {0}".format(i))
-        dic["k:{0}".format(i)] = [E, Var, np.mean(par1), np.var(par1)]
+        E_list.append(E)
+        V_list.append(Var)
+        mean_list.append(np.mean(par1))
+        var_list.append(np.var(par1))
+    dic["k:2.05"] = [E_list[0], V_list[0], mean_list[0], var_list[0]]
+    dic["k:2.5"] = [E_list[1], V_list[1], mean_list[1], var_list[1]]
+    dic["k:3"] = [E_list[2], V_list[2], mean_list[2], var_list[2]]
+    dic["k:4"] = [E_list[3], V_list[3], mean_list[3], var_list[3]]
     df = pd.DataFrame(dic, index=["Mean", "Variance", "Mean_analytical", "Variance_analytical"])
     print(df)
+
 

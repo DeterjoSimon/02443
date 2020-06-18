@@ -39,7 +39,6 @@ if __name__ == '__main__':
     print(df)
 
     W, E, Var = Control.control_estimate(n)
-    print(W, " :W")
     print(W.size, " : Size of W")
     print("--- Stratified estimation for exponential integral ---")
     dic = {"Estimate": [E, Var], "Theoretical": [theo_E, theo_Var], "CI": [mean_confidence_interval(W)]}

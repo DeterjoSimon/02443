@@ -34,8 +34,8 @@ def ks(X, n):
 
 
 def run_test_I(X, n):
-    n1 = sum(X[X > np.median(X)])
-    n2 = sum(X[X < np.median(X)])
+    n1 = len(X[X > np.median(X)])
+    n2 = len(X[X < np.median(X)])
     med = np.median(X)
     Ra = 0
     Rb = 0
@@ -50,10 +50,8 @@ def run_test_I(X, n):
             Rb += 1
             runs += 1
             crit = 'above'
-    mu = 2 * n1 * n2/(n1 + n2) + 1
-    numerator = 2 * n1 * n2 * (2 * n1 * n2 - n1 - n2)
-    denominator = ((n1 + n2)**2) * (n1 + n2 -1)
-    sigma = numerator / denominator
+    mu = 2*n1*n2/(n1+n2)+1
+    sigma = 2*n1*n2*(2*n1*n2-n1-n2)/((n1+n2)**2*(n1+n2-1))
     T = Ra + Rb
     return T, mu, sigma
 
@@ -167,7 +165,7 @@ if __name__ == '__main__':
 
     print("\n--- Run Test III ---")
     print(run_test_III(U, 10000)[0])
-    for i in range(1, 6):
+    for i in range(1, 7):
         print("Expected for length {0}: {1}".format(i, (2 * ((i ** 2 + 3 * i + 1) * 10000 -
                                                              (i ** 3 + 3 * i ** 2 - i - 4))) / math.factorial(i + 3)))
     print("Test statistic: ", run_test_III(U, 10000)[1])

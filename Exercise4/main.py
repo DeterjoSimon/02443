@@ -4,6 +4,7 @@ from scipy import stats
 import numpy as np
 from Exercise3 import funcPareto
 import scipy.stats
+from Exercise5 import Control
 
 class Server:
 
@@ -84,7 +85,7 @@ def service_Constant(n_customers, mean_serv_time):
 
 def service_Pareto(n_customers, k, mean_serv_time):
     U = np.random.uniform(0, 1, n_costumers)
-    X, E, V = funcPareto.pareto(U, k)
+    X, E, V = funcPareto.pareto(k, n_costumers)
     X = (k / (k - 1)) * mean_serv_time * X
     return X
     # ------------------------------------------------- #
@@ -173,6 +174,17 @@ if __name__ == "__main__":
     for i in range(m):
         S = Server(n_simulations)
         result.append(event_poisson_pareto(S, n_costumers, mean_time_btw, mean_serv_time, k=1.05))
+    print(result)
+    mu, low, up = mean_confidence_interval(result)
+    print("--- CI ---")
+    print("Mean value: ", mu)
+    print("[", low, " ; ", up, "]\n")
+
+    result = []
+    for i in range(m):
+        res, _, _ = Control.control_estimate(n_costumers)
+        S = Server(n_simulations)
+        result.append(event_poisson_exponential(S, n_costumers, np.mean(res), mean_serv_time))
     print(result)
     mu, low, up = mean_confidence_interval(result)
     print("--- CI ---")

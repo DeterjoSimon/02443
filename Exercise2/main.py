@@ -7,7 +7,7 @@ import math
 
 
 def histogram(x, y, label1, label2, n_bins=10):
-    plt.hist([x, y], n_bins, alpha=0.5, label=[label1, label2])
+    plt.hist([x, y], bins=n_bins, alpha=0.5, label=[label1, label2])
     plt.legend()
     plt.xlabel('Classes')
     plt.ylabel('Frequency')
@@ -38,7 +38,32 @@ def rejection(p):
     return X
 
 
-# def alias(p):
+def alias(p):
+    k = len(p)
+    L = [i for i in range(k)]
+    F = [i*k for i in p]
+    G = [i for i in range(len(F)) if F[i] >= 1]
+    S = [i for i in range(len(F)) if F[i] <= 1]
+
+    while len(S) != 0:
+        i, j = G[0], S[0]
+        L[j-1] = i
+        F[i-1] = F[i-1] - (1 - F[j-1])
+
+        if F[i-1] < 1:
+            G = G[1:]
+            S.append(i)
+        S = S[1:]
+
+    X = []
+    while len(X) < 10000:
+        I = math.floor(k * np.random.uniform(0, 1)) + 1
+        u2 = np.random.uniform(0, 1)
+        if u2 < F[I-1]:
+            X.append(I)
+        else:
+            X.append(L[I-1])
+    return X
 
 
 if __name__ == '__main__':
@@ -60,12 +85,34 @@ if __name__ == '__main__':
     B = stats.geom.rvs(p, size=10000)
     histogram(A, B, "simulation", "built-in")
 
+    print("--- Chi-square test ---")
+
+    t_test, p_value = stats.chisquare(np.histogram(A, bins=10)[0], np.histogram(B, bins=10)[0])
+    print("We get a test statistic of {0}".format(t_test))
+
     p = [7 / 48, 5 / 48, 1 / 8, 1 / 16, 1 / 4, 5 / 16]
-
+    expected = stats.rv_discrete(values=(np.arange(1, 7), p)).rvs(size=10000)
     a = direct_crude(U, p)
-    plt.hist(a)
-    plt.show()
-    b = rejection(p)
-    plt.hist(b)
-    plt.show()
+    histogram(expected, a, "Expected", "Direct Crude")
 
+    print("--- Chi-square test ---")
+
+    t_test, p_value = stats.chisquare(np.histogram(expected, bins=6, density=False)[0], np.histogram(a, bins=6, density=False)[0])
+    print("We get a test statistic of {0}".format(t_test))
+
+    b = rejection(p)
+    histogram(expected, b, "Expected", "Rejection")
+
+    print("--- Chi-square test ---")
+
+    t_test, p_value = stats.chisquare(np.histogram(expected, bins=6, density=False)[0],
+                                      np.histogram(a, bins=6, density=False)[0])
+    print("We get a test statistic of {0}".format(t_test))
+
+    c = alias(p)
+    histogram(expected, c, "Expected", "Alias")
+    print("--- Chi-square test ---")
+
+    t_test, p_value = stats.chisquare(np.histogram(expected, bins=6, density=False)[0],
+                                      np.histogram(a, bins=6, density=False)[0])
+    print("We get a test statistic of {0}".format(t_test))

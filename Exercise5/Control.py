@@ -16,3 +16,4 @@ def control_estimate(n):
     meanZ = sum(Z)/n
     varZ = varX - covXY**2/varY
     return Z, meanZ, varZ
+

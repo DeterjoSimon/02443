@@ -28,17 +28,4 @@ if __name__ == "__main__":
     S = [1, 2, 3, 4, 5, 6, 1]
     # print(TSP.TSP(A, S))
     print(distance_maker(data))
-    #
-    # dist_list = distance_maker(A)
-    # # Initialize fitness function object using dist_list
-    # fitness_dists = mlrose.TravellingSales(distances=dist_list)
-    # problem_fit = mlrose.TSPOpt(length=6, fitness_fn=fitness_dists,
-    #                             maximize=False)
-    #
-    # # Solve problem using the genetic algorithm
-    # best_state, best_fitness = mlrose.genetic_alg(problem_fit, mutation_prob=0.2,
-    #                                               max_attempts=100, random_state=2)
-    #
-    # print('The best state found is: ', best_state)
-    #
-    # print('The fitness at the best state is: ', best_fitness)
+
